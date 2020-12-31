@@ -7,11 +7,12 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView countLabel;
-    private TextView questionLabel;
+    private TextView countLabel, questionLabel;
     private Button answerBtn1, answerBtn2, answerBtn3, answerBtn4;
 
     private String rightAnswer;
@@ -47,20 +48,56 @@ public class MainActivity extends AppCompatActivity {
         answerBtn4 = findViewById(R.id.answerBtn4);
 
         // quizDataからクイズ出題用のquizArrayを作成する
-        for (String[] quizDatum : quizData) {
+        for (int i = 0; i < quizData.length; i++) {
 
-            // 新しいArrayを準備
+            // 新しいArrayListを準備
             ArrayList<String> tmpArray = new ArrayList<>();
 
             // クイズデータを追加
-            tmpArray.add(quizDatum[0]); // 都道府県名
-            tmpArray.add(quizDatum[1]); // 正解
-            tmpArray.add(quizDatum[2]); // 選択肢1
-            tmpArray.add(quizDatum[3]); // 選択肢2
-            tmpArray.add(quizDatum[4]); // 選択肢3
+            tmpArray.add(quizData[i][0]);  // 都道府県名
+            tmpArray.add(quizData[i][1]);  // 正解
+            tmpArray.add(quizData[i][2]);  // 選択肢１
+            tmpArray.add(quizData[i][3]);  // 選択肢２
+            tmpArray.add(quizData[i][4]);  // 選択肢３
 
             // tmpArrayをquizArrayに追加する
             quizArray.add(tmpArray);
         }
+
+        showNextQuiz();
+    }
+
+    public void showNextQuiz() {
+        // クイズカウントラベルを更新
+        //countLabel.setText("Q" + quizCount);
+        countLabel.setText(getString(R.string.count_label, quizCount));
+
+        // ランダムな数字を取得
+        Random random = new Random();
+        int randomNum = random.nextInt(quizArray.size());
+
+        // randomNumを使って、quizArrayからクイズを一つ取り出す
+        ArrayList<String> quiz = quizArray.get(randomNum);
+
+        // 問題文（都道府県名）を表示
+        questionLabel.setText(quiz.get(0));
+
+        // 正解をrightAnswerにセット
+        rightAnswer = quiz.get(1);
+
+        // クイズ配列から問題文（都道府県名）を削除
+        quiz.remove(0);
+
+        // 正解と選択肢３つをシャッフル
+        Collections.shuffle(quiz);
+
+        // 解答ボタンに正解と選択肢３つを表示
+        answerBtn1.setText(quiz.get(0));
+        answerBtn2.setText(quiz.get(1));
+        answerBtn3.setText(quiz.get(2));
+        answerBtn4.setText(quiz.get(3));
+
+        // このクイズをquizArrayから削除
+        quizArray.remove(randomNum);
     }
 }
